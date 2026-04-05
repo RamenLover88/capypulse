@@ -27,10 +27,11 @@ export const SEED_TOPICS = [
 
 // ─── Model Constants ────────────────────────────────────────────
 // DEV_MODE=true → all calls use Haiku (cheap, fast, for testing UI)
-// DEV_MODE=false → production model mix (Haiku for discover, Sonnet for chat/draft)
+// DEV_MODE=false → production: Haiku for verification, Sonnet for discover/chat, Opus for draft
 export const MODELS = {
   haiku: "claude-haiku-4-5-20251001",
   sonnet: DEV_MODE ? "claude-haiku-4-5-20251001" : "claude-sonnet-4-20250514",
+  opus: DEV_MODE ? "claude-haiku-4-5-20251001" : "claude-opus-4-20250514",
 };
 
 // ─── Rate Limit Config ──────────────────────────────────────────

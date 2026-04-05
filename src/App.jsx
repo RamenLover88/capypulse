@@ -286,6 +286,7 @@ export default function CapyPulse() {
         }],
         system: prompts.draft(config.industry, config),
         useSearch: false,
+        model: MODELS.opus,
         signal: abortRef.current.signal,
       });
       const text = extractText(data);
