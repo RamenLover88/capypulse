@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { T } from "../constants.js";
+import { T, MODELS } from "../constants.js";
 
 const SUGGESTED_INDUSTRIES = [
   "AI Health & Mental Health",
@@ -17,6 +17,9 @@ export default function SettingsModal({ config, onSave, onClose }) {
   const [audience, setAudience] = useState(config?.audience || "");
   const [tone, setTone] = useState(config?.tone || "balanced");
   const [xPremium, setXPremium] = useState(config?.xPremium || false);
+  const [modelPreset, setModelPreset] = useState(config?.modelPreset || "balanced");
+  const [showAdvanced, setShowAdvanced] = useState(!!config?.customModels);
+  const [customModels, setCustomModels] = useState(config?.customModels || { discover: "", chat: "", draft: "" });
   const closeRef = useRef(null);
   const previousFocusRef = useRef(null);
 
@@ -40,6 +43,8 @@ export default function SettingsModal({ config, onSave, onClose }) {
       audience: audience.trim(),
       tone,
       xPremium,
+      modelPreset,
+      customModels: showAdvanced ? customModels : null,
     });
     onClose();
   };
@@ -128,6 +133,61 @@ export default function SettingsModal({ config, onSave, onClose }) {
             </button>
           ))}
         </div>
+
+        {/* Model Selection */}
+        <label style={{ display: "block", fontFamily: T.sans, fontSize: 13, fontWeight: 600, color: T.textSecondary, letterSpacing: 0, marginTop: 20, marginBottom: 8 }}>
+          Quality Level
+        </label>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {[
+            { key: "economy", label: "Economy", desc: "Haiku — fast & cheap" },
+            { key: "balanced", label: "Balanced", desc: "Sonnet — recommended" },
+            { key: "quality", label: "Quality", desc: "Opus for drafts" },
+          ].map((p) => (
+            <button key={p.key} onClick={() => { setModelPreset(p.key); setShowAdvanced(false); setCustomModels({ discover: "", chat: "", draft: "" }); }} style={{
+              background: modelPreset === p.key && !showAdvanced ? T.primary : T.card,
+              color: modelPreset === p.key && !showAdvanced ? "#fff" : T.textSecondary,
+              border: `1.5px solid ${modelPreset === p.key && !showAdvanced ? T.primary : T.border}`,
+              borderRadius: 10, padding: "7px 14px", fontSize: 13,
+              cursor: "pointer", fontFamily: T.sans, textAlign: "left",
+            }}>
+              <div style={{ fontWeight: 600 }}>{p.label}</div>
+              <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>{p.desc}</div>
+            </button>
+          ))}
+        </div>
+        <button onClick={() => setShowAdvanced(!showAdvanced)} style={{
+          background: "none", border: "none", padding: "6px 0", marginTop: 8,
+          fontSize: 12, color: T.primary, cursor: "pointer", fontFamily: T.sans,
+        }}>
+          {showAdvanced ? "▲ Hide advanced" : "▼ Advanced — choose per stage"}
+        </button>
+        {showAdvanced && (
+          <div style={{ marginTop: 8, display: "flex", flexDirection: "column", gap: 8 }}>
+            {["discover", "chat", "draft"].map((phase) => (
+              <div key={phase} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <span style={{ fontSize: 12, color: T.textSecondary, fontFamily: T.sans, width: 70, textTransform: "capitalize" }}>{phase}</span>
+                <div style={{ display: "flex", gap: 4 }}>
+                  {[
+                    { id: MODELS.haiku, label: "Haiku" },
+                    { id: MODELS.sonnet, label: "Sonnet" },
+                    { id: MODELS.opus, label: "Opus" },
+                  ].map((m) => (
+                    <button key={m.id} onClick={() => setCustomModels(prev => ({ ...prev, [phase]: m.id }))} style={{
+                      background: customModels[phase] === m.id ? T.primary : T.card,
+                      color: customModels[phase] === m.id ? "#fff" : T.textSecondary,
+                      border: `1px solid ${customModels[phase] === m.id ? T.primary : T.borderLight}`,
+                      borderRadius: 6, padding: "4px 10px", fontSize: 11,
+                      cursor: "pointer", fontFamily: T.sans,
+                    }}>
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* X Premium */}
         <div style={{ marginTop: 20, display: "flex", alignItems: "center", gap: 10 }}>

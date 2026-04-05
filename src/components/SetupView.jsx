@@ -8,6 +8,7 @@ export default function SetupView({ onComplete }) {
   const [audience, setAudience] = useState("");
   const [tone, setTone] = useState("balanced");
   const [xPremium, setXPremium] = useState(false);
+  const [modelPreset, setModelPreset] = useState("balanced");
   const [apiKeyInput, setApiKeyInput] = useState(getApiKey());
   const [keyError, setKeyError] = useState("");
 
@@ -32,6 +33,7 @@ export default function SetupView({ onComplete }) {
       audience: audience.trim(),
       tone,
       xPremium,
+      modelPreset,
       createdAt: new Date().toISOString(),
     };
     await storageSet(STORAGE_KEYS.config, config);
@@ -131,6 +133,28 @@ export default function SetupView({ onComplete }) {
               cursor: "pointer", fontFamily: T.sans, transition: "all 0.2s",
             }}>
               {t}
+            </button>
+          ))}
+        </div>
+
+        <label style={{ display: "block", fontFamily: T.sans, fontSize: 13, fontWeight: 600, color: T.textSecondary, letterSpacing: 0, marginTop: 24, marginBottom: 8 }}>
+          Quality Level
+        </label>
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {[
+            { key: "economy", label: "Economy", desc: "Haiku — fast & cheap" },
+            { key: "balanced", label: "Balanced", desc: "Sonnet — recommended" },
+            { key: "quality", label: "Quality", desc: "Opus for drafts" },
+          ].map((p) => (
+            <button key={p.key} onClick={() => setModelPreset(p.key)} style={{
+              background: modelPreset === p.key ? T.primary : T.card,
+              color: modelPreset === p.key ? "#fff" : T.textSecondary,
+              border: `1.5px solid ${modelPreset === p.key ? T.primary : T.border}`,
+              borderRadius: 10, padding: "7px 14px", fontSize: 13,
+              cursor: "pointer", fontFamily: T.sans, textAlign: "left",
+            }}>
+              <div style={{ fontWeight: 600 }}>{p.label}</div>
+              <div style={{ fontSize: 11, opacity: 0.8, marginTop: 2 }}>{p.desc}</div>
             </button>
           ))}
         </div>

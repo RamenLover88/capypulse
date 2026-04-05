@@ -11,28 +11,36 @@ export function hasApiKey() {
   return !!getApiKey();
 }
 export const IS_LOCAL = true; // Always local for open-source version
-export const DEV_MODE = typeof import.meta !== "undefined" && import.meta.env?.VITE_DEV_MODE === "true";
 
 // ─── Config Defaults ─────────────────────────────────────────────
 export const DEFAULT_INDUSTRY = "AI Health & Mental Health";
 
-export const SEED_TOPICS = [
-  "AI mental health therapy chatbot ethics safety",
-  "AI wearable health diagnostics personalized medicine",
-  "AI drug discovery clinical trials breakthrough",
-  "AI mental health youth emotional dependence",
-  "AI health equity access underserved communities",
-  "AI burnout workplace mental health wellbeing",
-];
-
 // ─── Model Constants ────────────────────────────────────────────
-// DEV_MODE=true → all calls use Haiku (cheap, fast, for testing UI)
-// DEV_MODE=false → production: Haiku for verification, Sonnet for discover/chat, Opus for draft
 export const MODELS = {
   haiku: "claude-haiku-4-5-20251001",
-  sonnet: DEV_MODE ? "claude-haiku-4-5-20251001" : "claude-sonnet-4-20250514",
-  opus: DEV_MODE ? "claude-haiku-4-5-20251001" : "claude-opus-4-20250514",
+  sonnet: "claude-sonnet-4-20250514",
+  opus: "claude-opus-4-20250514",
 };
+
+// Preset → model mapping per phase
+const MODEL_PRESETS = {
+  economy:  { discover: MODELS.haiku,  chat: MODELS.haiku,  draft: MODELS.haiku },
+  balanced: { discover: MODELS.sonnet, chat: MODELS.sonnet, draft: MODELS.sonnet },
+  quality:  { discover: MODELS.sonnet, chat: MODELS.sonnet, draft: MODELS.opus },
+};
+
+// Get model ID for a given phase based on user config
+export function getModelForPhase(config, phase) {
+  // If user has custom per-phase models, use those
+  if (config?.customModels?.[phase]) {
+    return config.customModels[phase];
+  }
+  // Otherwise use preset
+  const preset = config?.modelPreset || "balanced";
+  return MODEL_PRESETS[preset]?.[phase] || MODELS.sonnet;
+}
+
+export const DEFAULT_MODEL_PRESET = "balanced";
 
 // ─── Rate Limit Config ──────────────────────────────────────────
 export const MAX_RETRIES = 3;

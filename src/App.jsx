@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { T, FONTS_URL, PHASE, MODELS, DEFAULT_INDUSTRY, MAX_CHAT_HISTORY } from "./constants.js";
+import { T, FONTS_URL, PHASE, MODELS, DEFAULT_INDUSTRY, MAX_CHAT_HISTORY, getModelForPhase } from "./constants.js";
 import { callClaude, extractText, stripCites, parseJSON, parseDraftResponse } from "./lib/api.js";
 import { prompts } from "./lib/prompts.js";
 import { storageGet, storageSet, STORAGE_KEYS } from "./lib/storage.js";
@@ -110,7 +110,7 @@ export default function CapyPulse() {
         messages: [{ role: "user", content: `Search for articles published in the last 2 days about: ${query}\n\nToday is ${today}. Industry focus: ${config.industry}.\n\nFind the most trending, high-engagement topics and extract up to 4 for a thought leader post.` }],
         system: prompts.discover(config.industry),
         useSearch: true,
-        model: MODELS.sonnet,
+        model: getModelForPhase(config, "discover"),
         maxTokens: 4000,
       });
       let text = extractText(data);
@@ -126,7 +126,7 @@ export default function CapyPulse() {
             { role: "user", content: "Now extract the topics as JSON based on the search results above. Return ONLY the JSON array, no other text." },
           ],
           system: prompts.discover(config.industry),
-          model: MODELS.sonnet,
+          model: getModelForPhase(config, "discover"),
           maxTokens: 4000,
         });
         text = extractText(retryData);
@@ -246,6 +246,7 @@ export default function CapyPulse() {
         messages: apiMessages,
         system: systemPrompt,
         useSearch: needsSearch,
+        model: getModelForPhase(config, "chat"),
         maxTokens: 2000,
         signal: abortRef.current.signal,
       });
@@ -286,7 +287,7 @@ export default function CapyPulse() {
         }],
         system: prompts.draft(config.industry, config),
         useSearch: false,
-        model: MODELS.opus,
+        model: getModelForPhase(config, "draft"),
         signal: abortRef.current.signal,
       });
       const text = extractText(data);
@@ -340,6 +341,7 @@ export default function CapyPulse() {
         messages: apiMessages,
         system: prompts.chat(config.industry, config),
         useSearch: false,
+        model: getModelForPhase(config, "chat"),
         maxTokens: 2000,
         signal: abortRef.current.signal,
       });
