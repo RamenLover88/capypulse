@@ -70,7 +70,9 @@ export default function SetupView({ onComplete }) {
           <p style={{ fontFamily: T.sans, fontSize: 12, color: T.accent, margin: "6px 0 0" }}>{keyError}</p>
         )}
         <p style={{ fontFamily: T.sans, fontSize: 12, color: T.textMuted, margin: "6px 0 0", lineHeight: 1.5 }}>
-          Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ color: T.primary }}>console.anthropic.com</a>. Stored locally in your browser only.
+          Get your key at <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer" style={{ color: T.primary }}>console.anthropic.com</a>.
+          Your key stays in your browser's local storage only — it is never sent to our servers.
+          This app is <a href="https://github.com/RamenLover88/capypulse" target="_blank" rel="noopener noreferrer" style={{ color: T.primary }}>open source</a> — you can verify this yourself.
         </p>
 
         <label style={{ display: "block", fontFamily: T.sans, fontSize: 13, fontWeight: 600, color: T.textSecondary, letterSpacing: 0, marginTop: 24, marginBottom: 8 }}>
